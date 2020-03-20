@@ -1,0 +1,21 @@
+current:
+versions:
+  amazon:
+    11.0.6.10.1:
+      dist: "amaz"
+      identifier: "11.0.6.10.1-amaz"
+      file: amazon-corretto-11.0.6.10.1-1-windows-x64-jdk.zip
+  openjdk:
+    "14":
+      dist: "open"
+      identifier: "14-open"
+      file: openjdk-14_windows-x64_bin.zip
+  zulu:
+    13.0.2:
+      dist: "zulu"
+      identifier: "13.0.2-zulu"
+      file: zulu13.29.9-ca-jdk13.0.2-win_x64.zip
+    13.0.1:
+      dist: "zulu"
+      identifier: "13.0.1-zulu"
+      file: zulu13.29.9-ca-jdk13.0.2-win_x64.zip
