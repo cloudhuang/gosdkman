@@ -1,6 +1,7 @@
 package jdk
 
 import (
+	"errors"
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -93,6 +94,11 @@ func UninstallVersion(identifier string) error {
 	err = yaml.Unmarshal(yamlFile, &jdk)
 	check(err)
 
+	if jdk.Current == identifier {
+		fmt.Printf("The JDK version %s currently in use, cannot uninstall", identifier)
+		return errors.New("can't uninstall the version")
+	}
+
 	var file string
 	for vendor, versions := range jdk.Versions {
 		for k, v := range versions {
@@ -149,7 +155,7 @@ func ListAvailableJDKVersion() {
 
 	fmt.Println("=====================================================================================")
 	fmt.Println("Use the Identifier for installation:")
-	fmt.Println("\t remoteJDK -i 11.0.6.10.1-amaz")
+	fmt.Println("\t jdk -i 11.0.6.10.1-amaz")
 }
 
 func selectAvailableJDK(identifier string) *NewInstallVersion {
@@ -157,7 +163,6 @@ func selectAvailableJDK(identifier string) *NewInstallVersion {
 	remoteJDK := remoteJDK()
 
 	for vendor, versions := range remoteJDK.Versions {
-		fmt.Printf(" %-10s | ", vendor)
 		for k, v := range versions {
 			if v.Identifier == identifier {
 				nv = NewInstallVersion{

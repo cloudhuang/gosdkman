@@ -2,21 +2,14 @@ JDKMAN
 
 ===========================
 
-[x] Setup the local JDK folder user - **.jdkman**
-
-[x] List all the local JDKs under the JDK folder
-
-[] List all the JDKs remotely
-
-[] Show the screen just like the sdkman
-
-[] jdk commands
-
-​	[] jdk list
-
-​	[] jdk install VERSION - only for current session
-
-​	[] jdk install default VERSION - install for global
+- [x] Setup the local JDK folder user - **.jdkman**
+- [x] List all the local JDKs under the JDK folder
+- [x] List all the JDKs remotely
+- [x] Show the screen just like the sdkman
+- [] jdk commands
+    - [x] jdk list
+    - [] jdk install VERSION
+    - [] jdk use VERSION - change the JAVA_HOME to the VERSION
 
 [] Update PATH environment - to add JAVA_HOME\bin item
 
