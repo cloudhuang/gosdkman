@@ -56,7 +56,7 @@ func main() {
 	gocmd.New(gocmd.Options{
 		Name:        "jdk",
 		Version:     "1.0.0",
-		Description: "JDK is a command-line tool which allows you to easily install, manage, and work with multiple Java environments.",
+		Description: "JDK is a command-line tool which allows you to easily install, manage, and work with multiple Java environments for windows.",
 		Flags:       &flags,
 		ConfigType:  gocmd.ConfigTypeAuto,
 	})
