@@ -14,8 +14,7 @@ func TestAddNewVersion(t *testing.T) {
 
 	var err error
 	// Add new version
-	err = InstallNewVersion("zulu", "11", "TESTPATH")
-	err = InstallNewVersion("zulu", "12", "TESTPATH")
+	err = InstallNewVersion("zulu", "11", "amaz", "11.0.6.10.1-amaz", "TESTPATH")
 	check(err)
 
 	err = UninstallVersion("zulu", "12")
@@ -29,4 +28,8 @@ func TestUninstallVersion(t *testing.T) {
 	check(err)
 
 	ListInstalledVersion()
+}
+
+func TestListAvailableJDKVersion(t *testing.T) {
+	ListAvailableJDKVersion()
 }

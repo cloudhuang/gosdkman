@@ -29,7 +29,7 @@ func main() {
 
 	// List command
 	gocmd.HandleFlag("List", func(cmd *gocmd.Cmd, args []string) error {
-		jdk.ListInstalledVersion()
+		jdk.ListAvailableJDKVersion()
 		return nil
 	})
 
