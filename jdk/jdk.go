@@ -28,58 +28,85 @@ type Version struct {
 	File       string `yaml: "file"`
 }
 
+type NewInstallVersion struct {
+	vendor     string
+	version    string
+	dist       string
+	identifier string
+	file       string
+}
+
 /*
 Add the new install jdk version to jdkman.yaml file
 */
-func InstallNewVersion(vendor string, version string, dist string, identifier string, file string) error {
+func InstallNewVersion(identifier string) error {
+
+	nv := selectAvailableJDK(identifier)
+
 	var jdk LocalJDK
 	yamlFile, err := ioutil.ReadFile(jdkmanYaml)
 	if err != nil {
 		jdk = LocalJDK{
-			Current: identifier,
+			Current: nv.identifier,
 		}
 	} else {
 		err = yaml.Unmarshal(yamlFile, &jdk)
 		check(err)
+		jdk.Current = identifier
 	}
 
 	newVersion := &Version{
-		Identifier: identifier,
-		Dist:       dist,
-		File:       file,
+		Identifier: nv.identifier,
+		Dist:       nv.dist,
+		File:       nv.file,
 	}
 
 	if jdk.Versions == nil {
 		jdk.Versions = make(map[string]map[string]Version)
 	}
 
-	if jdk.Versions[vendor] == nil {
-		jdk.Versions[vendor] = make(map[string]Version)
+	if jdk.Versions[nv.vendor] == nil {
+		jdk.Versions[nv.vendor] = make(map[string]Version)
 	}
-	jdk.Versions[vendor][version] = *newVersion
+	jdk.Versions[nv.vendor][nv.version] = *newVersion
 
 	marshal, _ := yaml.Marshal(jdk)
 
 	err = ioutil.WriteFile(jdkmanYaml, marshal, 0755)
 	check(err)
 
+	// TODO Download the remote JDK file
 	return nil
 }
 
 /*
 Uninstall the jdk version
 */
-func UninstallVersion(vendor, version string) error {
+func UninstallVersion(identifier string) error {
 	yamlFile, err := ioutil.ReadFile(jdkmanYaml)
-	check(err)
+	if err != nil {
+		return err
+	}
 
 	var jdk LocalJDK
 
 	err = yaml.Unmarshal(yamlFile, &jdk)
 	check(err)
 
-	versions := jdk.Versions[vendor]
-	delete(versions, version)
+	var file string
+	for vendor, versions := range jdk.Versions {
+		for k, v := range versions {
+			if v.Identifier == identifier {
+				delete(jdk.Versions[vendor], k)
+				file = v.File
+			}
+		}
+	}
+
+	if file != "" {
+		// TODO delete the jdk file
+		fmt.Printf("the jdk file: %s\n", file)
+	}
 
 	marshal, _ := yaml.Marshal(jdk)
 
@@ -93,21 +120,8 @@ func UninstallVersion(vendor, version string) error {
 List all the available JDK versions
 */
 func ListAvailableJDKVersion() {
-	var remote_jdkman = "https://raw.githubusercontent.com/cloudhuang/gojdkman/master/jdkman.yaml"
-
-	resp, err := http.Get(remote_jdkman)
-	if err != nil {
-		panic(err)
-	}
-
-	defer resp.Body.Close()
-	content, err := ioutil.ReadAll(resp.Body)
-
-	var jdk RemoteJDK
+	var remoteJDK = remoteJDK()
 	var localJDK = localJDK()
-
-	err = yaml.Unmarshal(content, &jdk)
-	check(err)
 
 	fmt.Println("=====================================================================================")
 	fmt.Println("Available Java Versions")
@@ -116,7 +130,7 @@ func ListAvailableJDKVersion() {
 	fmt.Printf(" %-10s | %-4s| %-12s | %-10s | %-10s | %-20s\n", "Vendor", "Use", "Version", "Dist", "Status", "Identifier")
 	fmt.Println("-------------------------------------------------------------------------------------")
 
-	for vendor, versions := range jdk.Versions {
+	for vendor, versions := range remoteJDK.Versions {
 		var idx = 0
 		fmt.Printf(" %-10s | ", vendor)
 		for k, v := range versions {
@@ -135,7 +149,50 @@ func ListAvailableJDKVersion() {
 
 	fmt.Println("=====================================================================================")
 	fmt.Println("Use the Identifier for installation:")
-	fmt.Println("\t jdk -i 11.0.6.10.1-amaz")
+	fmt.Println("\t remoteJDK -i 11.0.6.10.1-amaz")
+}
+
+func selectAvailableJDK(identifier string) *NewInstallVersion {
+	var nv NewInstallVersion
+	remoteJDK := remoteJDK()
+
+	for vendor, versions := range remoteJDK.Versions {
+		fmt.Printf(" %-10s | ", vendor)
+		for k, v := range versions {
+			if v.Identifier == identifier {
+				nv = NewInstallVersion{
+					vendor:     vendor,
+					version:    k,
+					dist:       v.Dist,
+					identifier: v.Identifier,
+					file:       v.File,
+				}
+			}
+
+		}
+	}
+
+	return &nv
+
+	// TODO download the remote jdk file
+}
+
+func remoteJDK() *RemoteJDK {
+	var remoteJDKManYaml = "https://raw.githubusercontent.com/cloudhuang/gojdkman/master/jdkman.yaml"
+
+	resp, err := http.Get(remoteJDKManYaml)
+	if err != nil {
+		panic(err)
+	}
+
+	defer resp.Body.Close()
+	content, err := ioutil.ReadAll(resp.Body)
+
+	var jdk RemoteJDK
+	err = yaml.Unmarshal(content, &jdk)
+	check(err)
+
+	return &jdk
 }
 
 /*

@@ -9,25 +9,17 @@ func TestListInstalledVersion(t *testing.T) {
 }
 
 func TestAddNewVersion(t *testing.T) {
-
-	ListInstalledVersion()
-
 	var err error
 	// Add new version
-	err = InstallNewVersion("zulu", "11", "amaz", "11.0.6.10.1-amaz", "TESTPATH")
-	check(err)
-
-	err = UninstallVersion("zulu", "12")
+	err = InstallNewVersion("13.0.1-zulu")
 	check(err)
 
 	ListInstalledVersion()
 }
 
 func TestUninstallVersion(t *testing.T) {
-	err := UninstallVersion("zulu", "11")
+	err := UninstallVersion("11.0.6.10.1-amaz")
 	check(err)
-
-	ListInstalledVersion()
 }
 
 func TestListAvailableJDKVersion(t *testing.T) {
