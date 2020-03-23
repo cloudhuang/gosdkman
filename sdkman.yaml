@@ -11,7 +11,11 @@ versions:
       identifier: "14-open"
       file: openjdk-14_windows-x64_bin.zip
   zulu:
-    13.0.2:
+    14.27.1:
       dist: "zulu"
-      identifier: "13.0.2-zulu"
-      file: zulu13.29.9-ca-jdk13.0.2-win_x64.zip
+      identifier: "14.27.1-zulu"
+      file: https://cdn.azul.com/zulu/bin/zulu14.27.1-ca-jdk14-win_x64.zip
+    13.29.9:
+      dist: "zulu"
+      dientifier: "13.29.9-zulu"
+      file: https://cdn.azul.com/zulu/bin/zulu13.29.9-ca-jdk13.0.2-win_x64.zip
