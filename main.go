@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/devfacet/gocmd"
-	jdk "gojdkman/jdk"
-	utils "gojdkman/utils"
+	jdk "gosdkman/jdk"
+	utils "gosdkman/utils"
 	"io/ioutil"
 	"log"
 	"os"
@@ -15,8 +15,8 @@ import (
 var identifier = "openjdk-14_windows-x64_bin.zip"
 
 var home, _ = os.UserHomeDir()
-var jdkman_path = filepath.Join(home, ".jdkman")
-var current_jdk_path = filepath.Join(jdkman_path, "current")
+var sdkManPath = filepath.Join(home, ".sdkman")
+var currentJdkPath = filepath.Join(sdkManPath, "current")
 
 func main() {
 	flags := struct {
@@ -54,9 +54,9 @@ func main() {
 
 	// Init the app
 	gocmd.New(gocmd.Options{
-		Name:        "jdk",
+		Name:        "GoSDKMan",
 		Version:     "1.0.0",
-		Description: "JDK is a command-line tool which allows you to easily install, manage, and work with multiple Java environments for windows.",
+		Description: "GoSDKMan is a command-line tool which allows you to easily install, manage, and work with multiple Java environments for windows.",
 		Flags:       &flags,
 		ConfigType:  gocmd.ConfigTypeAuto,
 	})
@@ -67,21 +67,21 @@ func main() {
 }
 
 func installNewJDK() {
-	err := os.MkdirAll(jdkman_path, os.ModePerm)
+	err := os.MkdirAll(sdkManPath, os.ModePerm)
 	if err != nil {
-		fmt.Println("Create jdkman folder failed.")
+		fmt.Println("Create sdkman folder failed.")
 	}
 
 	printJavaVersion()
 
 	// delete the Current folder is exists
-	err = os.RemoveAll(current_jdk_path)
+	err = os.RemoveAll(currentJdkPath)
 
 	// unzip the jdk zip file to Current folder
-	utils.Unzip(filepath.Join(jdkman_path, identifier), current_jdk_path)
+	utils.Unzip(filepath.Join(sdkManPath, identifier), currentJdkPath)
 
 	// list the folder
-	files, err := ioutil.ReadDir(current_jdk_path)
+	files, err := ioutil.ReadDir(currentJdkPath)
 
 	if err != nil {
 		log.Fatal(err)
@@ -92,13 +92,13 @@ func installNewJDK() {
 		new_jdk_path = file.Name()
 	}
 
-	jdk_path := filepath.Join(current_jdk_path, new_jdk_path)
+	jdk_path := filepath.Join(currentJdkPath, new_jdk_path)
 	fmt.Printf("\nThe new JDK HOME is %s", jdk_path)
 
 	err_path := utils.SetEnv("JAVA_HOME", jdk_path)
 	err_classpath := utils.SetEnv("classpath", ".;%JAVA_HOME%\\lib")
 	if err_path != nil && err_classpath != nil {
-		fmt.Errorf("Failed to config JDK in system: %v - %v", err_path, err_classpath)
+		fmt.Errorf("failed to config JDK in system: %v - %v", err_path, err_classpath)
 	}
 }
 

@@ -7,11 +7,11 @@ import (
 	"testing"
 )
 
-var remote_jdkman = "https://raw.githubusercontent.com/cloudhuang/gojdkman/master/jdkman.yaml"
+var remoteSDKmanYaml = "https://raw.githubusercontent.com/cloudhuang/gosdkman/master/sdkman.yaml"
 
 func TestListFolders(t *testing.T) {
 
-	resp, err := http.Get(remote_jdkman)
+	resp, err := http.Get(remoteSDKmanYaml)
 	if err != nil {
 		panic(err)
 	}

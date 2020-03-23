@@ -11,8 +11,8 @@ import (
 )
 
 var home, _ = os.UserHomeDir()
-var jdkmanPath = filepath.Join(home, ".jdkman")
-var jdkmanYaml = filepath.Join(jdkmanPath, "jdkman.yaml")
+var sdkmanPath = filepath.Join(home, ".gosdkman")
+var sdkmanYaml = filepath.Join(sdkmanPath, "sdkman.yaml")
 
 type RemoteJDK struct {
 	Versions map[string]map[string]Version `yaml:"versions"`
@@ -38,14 +38,14 @@ type NewInstallVersion struct {
 }
 
 /*
-Add the new install jdk version to jdkman.yaml file
+Add the new install jdk version to sdkman.yaml file
 */
 func InstallNewVersion(identifier string) error {
 
 	nv := selectAvailableJDK(identifier)
 
 	var jdk LocalJDK
-	yamlFile, err := ioutil.ReadFile(jdkmanYaml)
+	yamlFile, err := ioutil.ReadFile(sdkmanYaml)
 	if err != nil {
 		jdk = LocalJDK{
 			Current: nv.identifier,
@@ -73,7 +73,7 @@ func InstallNewVersion(identifier string) error {
 
 	marshal, _ := yaml.Marshal(jdk)
 
-	err = ioutil.WriteFile(jdkmanYaml, marshal, 0755)
+	err = ioutil.WriteFile(sdkmanYaml, marshal, 0755)
 	check(err)
 
 	// TODO Download the remote JDK file
@@ -84,7 +84,7 @@ func InstallNewVersion(identifier string) error {
 Uninstall the jdk version
 */
 func UninstallVersion(identifier string) error {
-	yamlFile, err := ioutil.ReadFile(jdkmanYaml)
+	yamlFile, err := ioutil.ReadFile(sdkmanYaml)
 	if err != nil {
 		return err
 	}
@@ -116,7 +116,7 @@ func UninstallVersion(identifier string) error {
 
 	marshal, _ := yaml.Marshal(jdk)
 
-	err = ioutil.WriteFile(jdkmanYaml, marshal, 0755)
+	err = ioutil.WriteFile(sdkmanYaml, marshal, 0755)
 	check(err)
 
 	return nil
@@ -183,9 +183,9 @@ func selectAvailableJDK(identifier string) *NewInstallVersion {
 }
 
 func remoteJDK() *RemoteJDK {
-	var remoteJDKManYaml = "https://raw.githubusercontent.com/cloudhuang/gojdkman/master/jdkman.yaml"
+	var remoteSDKManYaml = "https://raw.githubusercontent.com/cloudhuang/gosdkman/master/sdkman.yaml"
 
-	resp, err := http.Get(remoteJDKManYaml)
+	resp, err := http.Get(remoteSDKManYaml)
 	if err != nil {
 		panic(err)
 	}
@@ -204,7 +204,7 @@ func remoteJDK() *RemoteJDK {
 Get all local JDK version
 */
 func localJDK() *LocalJDK {
-	yamlFile, err := ioutil.ReadFile(jdkmanYaml)
+	yamlFile, err := ioutil.ReadFile(sdkmanYaml)
 	if err != nil {
 		return &LocalJDK{}
 	}
@@ -233,7 +233,7 @@ func isInstalled(identifier string, jdk *LocalJDK) string {
 List all the installed local LocalJDK versions
 */
 func ListInstalledVersion() {
-	yamlFile, err := ioutil.ReadFile(jdkmanYaml)
+	yamlFile, err := ioutil.ReadFile(sdkmanYaml)
 	if err != nil {
 		return
 	}

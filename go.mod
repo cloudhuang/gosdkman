@@ -1,4 +1,4 @@
-module gojdkman
+module gosdkman
 
 go 1.14
 

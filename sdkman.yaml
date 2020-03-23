@@ -15,7 +15,3 @@ versions:
       dist: "zulu"
       identifier: "13.0.2-zulu"
       file: zulu13.29.9-ca-jdk13.0.2-win_x64.zip
-    13.0.1:
-      dist: "zulu"
-      identifier: "13.0.1-zulu"
-      file: zulu13.29.9-ca-jdk13.0.2-win_x64.zip
