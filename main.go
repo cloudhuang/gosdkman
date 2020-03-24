@@ -4,19 +4,7 @@ import (
 	"fmt"
 	"github.com/devfacet/gocmd"
 	jdk "gosdkman/jdk"
-	utils "gosdkman/utils"
-	"io/ioutil"
-	"log"
-	"os"
-	"path/filepath"
 )
-
-//var identifier = "jdk-13-openjdk.zip"
-var identifier = "openjdk-14_windows-x64_bin.zip"
-
-var home, _ = os.UserHomeDir()
-var sdkManPath = filepath.Join(home, ".sdkman")
-var currentJdkPath = filepath.Join(sdkManPath, "current")
 
 func main() {
 	flags := struct {
@@ -35,13 +23,13 @@ func main() {
 	})
 
 	gocmd.HandleFlag("Use", func(cmd *gocmd.Cmd, args []string) error {
-		identifier = args[0]
+		identifier := args[0]
 		fmt.Println(identifier)
 		return nil
 	})
 
 	gocmd.HandleFlag("Install", func(cmd *gocmd.Cmd, args []string) error {
-		identifier = args[0]
+		identifier := args[0]
 		err := jdk.InstallNewVersion(identifier)
 		if err == nil {
 			fmt.Println("The new JDK version installed success, please restart the console.")
@@ -52,7 +40,7 @@ func main() {
 	})
 
 	gocmd.HandleFlag("Uninstall", func(cmd *gocmd.Cmd, args []string) error {
-		identifier = args[0]
+		identifier := args[0]
 		fmt.Println(identifier)
 		return nil
 	})
@@ -65,52 +53,4 @@ func main() {
 		Flags:       &flags,
 		ConfigType:  gocmd.ConfigTypeAuto,
 	})
-
-	//installNewJDK()
-
-	//printJavaVersion()
-}
-
-func installNewJDK() {
-	err := os.MkdirAll(sdkManPath, os.ModePerm)
-	if err != nil {
-		fmt.Println("Create sdkman folder failed.")
-	}
-
-	printJavaVersion()
-
-	// delete the Current folder is exists
-	err = os.RemoveAll(currentJdkPath)
-
-	// unzip the jdk zip file to Current folder
-	utils.Unzip(filepath.Join(sdkManPath, identifier), currentJdkPath)
-
-	// list the folder
-	files, err := ioutil.ReadDir(currentJdkPath)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var new_jdk_path string
-	for _, file := range files {
-		new_jdk_path = file.Name()
-	}
-
-	jdk_path := filepath.Join(currentJdkPath, new_jdk_path)
-	fmt.Printf("\nThe new JDK HOME is %s", jdk_path)
-
-	err_path := utils.SetEnv("JAVA_HOME", jdk_path)
-	err_classpath := utils.SetEnv("classpath", ".;%JAVA_HOME%\\lib")
-	if err_path != nil && err_classpath != nil {
-		fmt.Errorf("failed to config JDK in system: %v - %v", err_path, err_classpath)
-	}
-}
-
-func printJavaVersion() {
-	var_java_home := os.Getenv("JAVA_HOME")
-	fmt.Printf("\nThe Current JAVA_HOME: %s", var_java_home)
-
-	var_classpath := os.Getenv("classpath")
-	fmt.Printf("\nThe Current classpath: %s", var_classpath)
 }
