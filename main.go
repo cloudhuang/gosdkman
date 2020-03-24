@@ -34,7 +34,7 @@ func main() {
 		if err == nil {
 			fmt.Println("The new JDK version installed success, please restart the console.")
 		} else {
-
+			fmt.Println(err.Error())
 		}
 		return nil
 	})

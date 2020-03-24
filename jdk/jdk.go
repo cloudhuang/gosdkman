@@ -55,36 +55,38 @@ func InstallNewVersion(identifier string) error {
 		}
 	} else {
 		err = yaml.Unmarshal(yamlFile, &jdk)
-		check(err)
+		if err != nil {
+			return errors.New("failed to config the JDK path")
+		}
 	}
 
-	JDKfile, err := utils.DownloadFile(nv.file)
+	jdkFile, err := utils.DownloadFile(nv.file)
 	if err != nil {
-		panic(err)
+		return errors.New("failed to config the JDK path")
 	}
 
 	err = clearOrCreateCurrentPath(err)
-	check(err)
+	if err != nil {
+		return errors.New("failed to config the JDK path")
+	}
 
-	newJDKPath := unzipJDKVersion(JDKfile)
+	newJDKPath := unzipJDKVersion(jdkFile)
 
 	jdkPath := filepath.Join(currentJdkPath, newJDKPath)
 
 	err = utils.SetEnv("JAVA_HOME", jdkPath)
 	if err != nil {
-		fmt.Errorf("failed to config JDK in system: %v", err)
 		return errors.New("failed to config the JDK path")
 	}
 	err = utils.SetEnv("classpath", ".;%JAVA_HOME%\\lib")
 	if err != nil {
-		fmt.Errorf("failed to config JDK in system: %v", err)
 		return errors.New("failed to config the JDK path")
 	}
 
 	newVersion := &Version{
 		Identifier: nv.identifier,
 		Dist:       nv.dist,
-		File:       JDKfile,
+		File:       jdkFile,
 	}
 
 	if jdk.Versions == nil {
@@ -100,7 +102,9 @@ func InstallNewVersion(identifier string) error {
 	marshal, _ := yaml.Marshal(jdk)
 
 	err = ioutil.WriteFile(SdkmanYaml, marshal, 0755)
-	check(err)
+	if err != nil {
+		return errors.New("failed to config the JDK path")
+	}
 
 	return nil
 }
@@ -126,11 +130,11 @@ func unzipJDKVersion(filename string) string {
 
 func clearOrCreateCurrentPath(err error) error {
 	if utils.Exists(currentJdkPath) {
-		// delete the Current folder is exists
+		// delete the Current folder if exists
 		err = os.RemoveAll(currentJdkPath)
 	}
 	if !utils.Exists(currentJdkPath) {
-		os.Mkdir(currentJdkPath, os.FileMode(0755))
+		err = os.Mkdir(currentJdkPath, os.FileMode(0755))
 	}
 	return err
 }
