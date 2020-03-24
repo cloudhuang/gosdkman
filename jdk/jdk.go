@@ -4,15 +4,18 @@ import (
 	"errors"
 	"fmt"
 	"gopkg.in/yaml.v2"
+	"gosdkman/utils"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 )
 
-var home, _ = os.UserHomeDir()
-var sdkmanPath = filepath.Join(home, ".gosdkman")
-var sdkmanYaml = filepath.Join(sdkmanPath, "sdkman.yaml")
+var Home, _ = os.UserHomeDir()
+var SdkManPath = filepath.Join(Home, ".gosdkman")
+var SdkmanYaml = filepath.Join(SdkManPath, "sdkman.yaml")
+var currentJdkPath = filepath.Join(SdkManPath, "current")
 
 type RemoteJDK struct {
 	Versions map[string]map[string]Version `yaml:"versions"`
@@ -45,7 +48,7 @@ func InstallNewVersion(identifier string) error {
 	nv := selectAvailableJDK(identifier)
 
 	var jdk LocalJDK
-	yamlFile, err := ioutil.ReadFile(sdkmanYaml)
+	yamlFile, err := ioutil.ReadFile(SdkmanYaml)
 	if err != nil {
 		jdk = LocalJDK{
 			Current: nv.identifier,
@@ -53,13 +56,36 @@ func InstallNewVersion(identifier string) error {
 	} else {
 		err = yaml.Unmarshal(yamlFile, &jdk)
 		check(err)
-		jdk.Current = identifier
+	}
+
+	JDKfile, err := utils.DownloadFile(nv.file)
+	fmt.Printf("JDK File: %s", JDKfile)
+	if err != nil {
+		panic(err)
+	}
+
+	err = clearOrCreateCurrentPath(err)
+	check(err)
+
+	newJDKPath := unzipJDKVersion(JDKfile)
+
+	jdkPath := filepath.Join(currentJdkPath, newJDKPath)
+
+	err = utils.SetEnv("JAVA_HOME", jdkPath)
+	if err != nil {
+		fmt.Errorf("failed to config JDK in system: %v - %v", err)
+		return errors.New("failed to config the JDK path")
+	}
+	err = utils.SetEnv("classpath", ".;%JAVA_HOME%\\lib")
+	if err != nil {
+		fmt.Errorf("failed to config JDK in system: %v - %v", err)
+		return errors.New("failed to config the JDK path")
 	}
 
 	newVersion := &Version{
 		Identifier: nv.identifier,
 		Dist:       nv.dist,
-		File:       nv.file,
+		File:       JDKfile,
 	}
 
 	if jdk.Versions == nil {
@@ -70,21 +96,51 @@ func InstallNewVersion(identifier string) error {
 		jdk.Versions[nv.vendor] = make(map[string]Version)
 	}
 	jdk.Versions[nv.vendor][nv.version] = *newVersion
+	jdk.Current = identifier
 
 	marshal, _ := yaml.Marshal(jdk)
 
-	err = ioutil.WriteFile(sdkmanYaml, marshal, 0755)
+	err = ioutil.WriteFile(SdkmanYaml, marshal, 0755)
 	check(err)
 
-	// TODO Download the remote JDK file
 	return nil
+}
+
+func unzipJDKVersion(filename string) string {
+	// unzip the jdk zip file to Current folder
+	utils.Unzip(filepath.Join(SdkManPath, filename), currentJdkPath)
+
+	// list the folder
+	files, err := ioutil.ReadDir(currentJdkPath)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var newJDKPath string
+	for _, file := range files {
+		newJDKPath = file.Name()
+	}
+
+	return newJDKPath
+}
+
+func clearOrCreateCurrentPath(err error) error {
+	if utils.Exists(currentJdkPath) {
+		// delete the Current folder is exists
+		err = os.RemoveAll(currentJdkPath)
+	}
+	if !utils.Exists(currentJdkPath) {
+		os.Mkdir(currentJdkPath, os.FileMode(0755))
+	}
+	return err
 }
 
 /*
 Uninstall the jdk version
 */
 func UninstallVersion(identifier string) error {
-	yamlFile, err := ioutil.ReadFile(sdkmanYaml)
+	yamlFile, err := ioutil.ReadFile(SdkmanYaml)
 	if err != nil {
 		return err
 	}
@@ -116,7 +172,7 @@ func UninstallVersion(identifier string) error {
 
 	marshal, _ := yaml.Marshal(jdk)
 
-	err = ioutil.WriteFile(sdkmanYaml, marshal, 0755)
+	err = ioutil.WriteFile(SdkmanYaml, marshal, 0755)
 	check(err)
 
 	return nil
@@ -204,7 +260,7 @@ func remoteJDK() *RemoteJDK {
 Get all local JDK version
 */
 func localJDK() *LocalJDK {
-	yamlFile, err := ioutil.ReadFile(sdkmanYaml)
+	yamlFile, err := ioutil.ReadFile(SdkmanYaml)
 	if err != nil {
 		return &LocalJDK{}
 	}
@@ -233,7 +289,7 @@ func isInstalled(identifier string, jdk *LocalJDK) string {
 List all the installed local LocalJDK versions
 */
 func ListInstalledVersion() {
-	yamlFile, err := ioutil.ReadFile(sdkmanYaml)
+	yamlFile, err := ioutil.ReadFile(SdkmanYaml)
 	if err != nil {
 		return
 	}
