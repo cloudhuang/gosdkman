@@ -233,12 +233,10 @@ func selectAvailableJDK(identifier string) *NewInstallVersion {
 	}
 
 	return &nv
-
-	// TODO download the remote jdk file
 }
 
 func remoteJDK() *RemoteJDK {
-	var remoteSDKManYaml = "https://raw.githubusercontent.com/cloudhuang/gosdkman/master/sdkman.yaml"
+	var remoteSDKManYaml = "http://q7oqvkeuv.bkt.clouddn.com/sdkman.yaml"
 
 	resp, err := http.Get(remoteSDKManYaml)
 	if err != nil {
