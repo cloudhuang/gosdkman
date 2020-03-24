@@ -59,7 +59,6 @@ func InstallNewVersion(identifier string) error {
 	}
 
 	JDKfile, err := utils.DownloadFile(nv.file)
-	fmt.Printf("JDK File: %s", JDKfile)
 	if err != nil {
 		panic(err)
 	}
@@ -73,12 +72,12 @@ func InstallNewVersion(identifier string) error {
 
 	err = utils.SetEnv("JAVA_HOME", jdkPath)
 	if err != nil {
-		fmt.Errorf("failed to config JDK in system: %v - %v", err)
+		fmt.Errorf("failed to config JDK in system: %v", err)
 		return errors.New("failed to config the JDK path")
 	}
 	err = utils.SetEnv("classpath", ".;%JAVA_HOME%\\lib")
 	if err != nil {
-		fmt.Errorf("failed to config JDK in system: %v - %v", err)
+		fmt.Errorf("failed to config JDK in system: %v", err)
 		return errors.New("failed to config the JDK path")
 	}
 

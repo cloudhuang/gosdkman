@@ -42,7 +42,12 @@ func main() {
 
 	gocmd.HandleFlag("Install", func(cmd *gocmd.Cmd, args []string) error {
 		identifier = args[0]
-		fmt.Println(identifier)
+		err := jdk.InstallNewVersion(identifier)
+		if err == nil {
+			fmt.Println("The new JDK version installed success, please restart the console.")
+		} else {
+
+		}
 		return nil
 	})
 
