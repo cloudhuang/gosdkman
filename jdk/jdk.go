@@ -14,7 +14,7 @@ import (
 
 var Home, _ = os.UserHomeDir()
 var SdkManPath = filepath.Join(Home, ".gosdkman")
-var SdkmanYaml = filepath.Join(SdkManPath, "sdkman.yaml")
+var SdkManYaml = filepath.Join(SdkManPath, "sdkman.yaml")
 var currentJdkPath = filepath.Join(SdkManPath, "current")
 
 type RemoteJDK struct {
@@ -48,7 +48,7 @@ func InstallNewVersion(identifier string) error {
 	nv := selectAvailableJDK(identifier)
 
 	var jdk LocalJDK
-	yamlFile, err := ioutil.ReadFile(SdkmanYaml)
+	yamlFile, err := ioutil.ReadFile(SdkManYaml)
 	if err != nil {
 		jdk = LocalJDK{
 			Current: nv.identifier,
@@ -101,7 +101,7 @@ func InstallNewVersion(identifier string) error {
 
 	marshal, _ := yaml.Marshal(jdk)
 
-	err = ioutil.WriteFile(SdkmanYaml, marshal, 0755)
+	err = ioutil.WriteFile(SdkManYaml, marshal, 0755)
 	if err != nil {
 		return errors.New("failed to config the JDK path")
 	}
@@ -143,7 +143,7 @@ func clearOrCreateCurrentPath(err error) error {
 Uninstall the jdk version
 */
 func UninstallVersion(identifier string) error {
-	yamlFile, err := ioutil.ReadFile(SdkmanYaml)
+	yamlFile, err := ioutil.ReadFile(SdkManYaml)
 	if err != nil {
 		return err
 	}
@@ -175,7 +175,7 @@ func UninstallVersion(identifier string) error {
 
 	marshal, _ := yaml.Marshal(jdk)
 
-	err = ioutil.WriteFile(SdkmanYaml, marshal, 0755)
+	err = ioutil.WriteFile(SdkManYaml, marshal, 0755)
 	check(err)
 
 	return nil
@@ -261,7 +261,7 @@ func remoteJDK() *RemoteJDK {
 Get all local JDK version
 */
 func localJDK() *LocalJDK {
-	yamlFile, err := ioutil.ReadFile(SdkmanYaml)
+	yamlFile, err := ioutil.ReadFile(SdkManYaml)
 	if err != nil {
 		return &LocalJDK{}
 	}
@@ -294,7 +294,7 @@ func isJDKFileExists(file string) bool {
 List all the installed local LocalJDK versions
 */
 func ListInstalledVersion() {
-	yamlFile, err := ioutil.ReadFile(SdkmanYaml)
+	yamlFile, err := ioutil.ReadFile(SdkManYaml)
 	if err != nil {
 		return
 	}
