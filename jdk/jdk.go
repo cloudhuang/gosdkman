@@ -277,13 +277,17 @@ func localJDK() *LocalJDK {
 func isInstalled(identifier string, jdk *LocalJDK) string {
 	for _, versions := range jdk.Versions {
 		for _, v := range versions {
-			if identifier == v.Identifier {
+			if identifier == v.Identifier && isJDKFileExists(v.File) {
 				return "Installed"
 			}
 		}
 	}
 
 	return ""
+}
+
+func isJDKFileExists(file string) bool {
+	return utils.Exists(filepath.Join(SdkManPath, file))
 }
 
 /*
