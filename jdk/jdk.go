@@ -44,8 +44,64 @@ type NewInstallVersion struct {
 Add the new install jdk version to sdkman.yaml file
 */
 func InstallNewVersion(identifier string) error {
-
 	nv := selectAvailableJDK(identifier)
+
+	localJDKFile, err := utils.DownloadFile(nv.file)
+	if err != nil {
+		return errors.New("\nFailed to download the JDK file")
+	}
+
+	err = configSDKManYaml(nv, localJDKFile, identifier)
+	if err != nil {
+		return errors.New("\nFailed to config the JDK path")
+	}
+
+	return UseJDKVersion(identifier)
+}
+
+func UseJDKVersion(identifier string) error {
+	localJDKFile := getLocalJDKFilename(identifier)
+
+	if localJDKFile != "" && isJDKFileExists(localJDKFile) {
+		nv := selectAvailableJDK(identifier)
+
+		err := clearOrCreateCurrentPath()
+		if err != nil {
+			return errors.New("\nFailed to config the JDK path")
+		}
+
+		newJDKPath := unzipJDKVersion(localJDKFile)
+
+		// set the system environments
+		err = utils.SetEnv("JAVA_HOME", filepath.Join(currentJdkPath, newJDKPath))
+		if err != nil {
+			return errors.New("\nFailed to config the JDK path")
+		}
+		err = utils.SetEnv("classpath", ".;%JAVA_HOME%\\lib")
+		if err != nil {
+			return errors.New("\nFailed to config the JDK path")
+		}
+
+		// update the sdkman.yaml configuration file
+		err = configSDKManYaml(nv, localJDKFile, identifier)
+		if err != nil {
+			return err
+		}
+
+	} else {
+		fmt.Println("The JDK version is not installed, will download it and configure as the current JDK version")
+		return InstallNewVersion(identifier)
+	}
+
+	return nil
+}
+
+func configSDKManYaml(nv *NewInstallVersion, localJDKFile string, identifier string) error {
+	newVersion := &Version{
+		Identifier: nv.identifier,
+		Dist:       nv.dist,
+		File:       localJDKFile,
+	}
 
 	var jdk LocalJDK
 	yamlFile, err := ioutil.ReadFile(SdkManYaml)
@@ -56,37 +112,8 @@ func InstallNewVersion(identifier string) error {
 	} else {
 		err = yaml.Unmarshal(yamlFile, &jdk)
 		if err != nil {
-			return errors.New("failed to config the JDK path")
+			return errors.New("\nFailed to config the JDK path")
 		}
-	}
-
-	jdkFile, err := utils.DownloadFile(nv.file)
-	if err != nil {
-		return errors.New("failed to config the JDK path")
-	}
-
-	err = clearOrCreateCurrentPath(err)
-	if err != nil {
-		return errors.New("failed to config the JDK path")
-	}
-
-	newJDKPath := unzipJDKVersion(jdkFile)
-
-	jdkPath := filepath.Join(currentJdkPath, newJDKPath)
-
-	err = utils.SetEnv("JAVA_HOME", jdkPath)
-	if err != nil {
-		return errors.New("failed to config the JDK path")
-	}
-	err = utils.SetEnv("classpath", ".;%JAVA_HOME%\\lib")
-	if err != nil {
-		return errors.New("failed to config the JDK path")
-	}
-
-	newVersion := &Version{
-		Identifier: nv.identifier,
-		Dist:       nv.dist,
-		File:       jdkFile,
 	}
 
 	if jdk.Versions == nil {
@@ -103,9 +130,8 @@ func InstallNewVersion(identifier string) error {
 
 	err = ioutil.WriteFile(SdkManYaml, marshal, 0755)
 	if err != nil {
-		return errors.New("failed to config the JDK path")
+		return errors.New("\nFailed to config the JDK path")
 	}
-
 	return nil
 }
 
@@ -128,7 +154,8 @@ func unzipJDKVersion(filename string) string {
 	return newJDKPath
 }
 
-func clearOrCreateCurrentPath(err error) error {
+func clearOrCreateCurrentPath() error {
+	var err error
 	if utils.Exists(currentJdkPath) {
 		// delete the Current folder if exists
 		err = os.RemoveAll(currentJdkPath)
@@ -157,17 +184,9 @@ func UninstallVersion(identifier string) error {
 		return errors.New(fmt.Sprintf("The JDK version '%s' currently in use, cannot uninstall", identifier))
 	}
 
-	var file string
-	for vendor, versions := range jdk.Versions {
-		for k, v := range versions {
-			if v.Identifier == identifier {
-				delete(jdk.Versions[vendor], k)
-				file = v.File
-			}
-		}
-	}
+	var file = getLocalJDKFilename(identifier)
 
-	if file != "" && utils.Exists(filepath.Join(SdkManPath, file)) {
+	if file != "" && isJDKFileExists(file) {
 		err := os.RemoveAll(filepath.Join(SdkManPath, file))
 		if err != nil {
 			return errors.New("failed to delete the JDK version")
@@ -204,7 +223,7 @@ func ListAvailableJDKVersion() {
 		for k, v := range versions {
 
 			isUseResult := isJDKUsed(v.Identifier, localJDK.Current)
-			status := isInstalled(v.Identifier, localJDK)
+			status := isStatusInstalled(v.Identifier, localJDK)
 
 			if idx == 0 {
 				fmt.Printf("%-4s| %-12s | %-10s | %-10s | %-20s\n", isUseResult, k, v.Dist, status, v.Identifier)
@@ -277,7 +296,7 @@ func localJDK() *LocalJDK {
 	return &jdk
 }
 
-func isInstalled(identifier string, jdk *LocalJDK) string {
+func isStatusInstalled(identifier string, jdk *LocalJDK) string {
 	for _, versions := range jdk.Versions {
 		for _, v := range versions {
 			if identifier == v.Identifier && isJDKFileExists(v.File) {
@@ -286,6 +305,19 @@ func isInstalled(identifier string, jdk *LocalJDK) string {
 		}
 	}
 
+	return ""
+}
+
+func getLocalJDKFilename(identifier string) string {
+	localJDK := localJDK()
+
+	for _, versions := range localJDK.Versions {
+		for _, v := range versions {
+			if identifier == v.Identifier {
+				return v.File
+			}
+		}
+	}
 	return ""
 }
 
