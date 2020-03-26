@@ -41,3 +41,7 @@ func TestDownloadRemoteJDKFile(t *testing.T) {
 	var jdkFile = "https://cdn.azul.com/zulu/bin/zulu14.27.1-ca-jdk14-win_x64.zip"
 	utils.DownloadFile(jdkFile)
 }
+
+func TestLength(t *testing.T) {
+	fmt.Println(len("AdoptOpenJDK"))
+}

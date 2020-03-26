@@ -214,12 +214,12 @@ func ListAvailableJDKVersion() {
 	fmt.Println("Available Java Versions")
 	fmt.Println("=====================================================================================")
 
-	fmt.Printf(" %-10s | %-4s| %-12s | %-10s | %-10s | %-20s\n", "Vendor", "Use", "Version", "Dist", "Status", "Identifier")
+	fmt.Printf(" %-15s | %-4s| %-12s | %-10s | %-10s | %-20s\n", "Vendor", "Use", "Version", "Dist", "Status", "Identifier")
 	fmt.Println("-------------------------------------------------------------------------------------")
 
 	for vendor, versions := range remoteJDK.Versions {
 		var idx = 0
-		fmt.Printf(" %-10s | ", vendor)
+		fmt.Printf(" %-15s | ", vendor)
 		for k, v := range versions {
 
 			isUseResult := isJDKUsed(v.Identifier, localJDK.Current)
@@ -228,7 +228,7 @@ func ListAvailableJDKVersion() {
 			if idx == 0 {
 				fmt.Printf("%-4s| %-12s | %-10s | %-10s | %-20s\n", isUseResult, k, v.Dist, status, v.Identifier)
 			} else {
-				fmt.Printf(" %-10s | %-4s| %-12s | %-10s | %-10s | %-20s\n", "", isUseResult, k, v.Dist, status, v.Identifier)
+				fmt.Printf(" %-15s | %-4s| %-12s | %-10s | %-10s | %-20s\n", "", isUseResult, k, v.Dist, status, v.Identifier)
 			}
 			idx++
 		}
