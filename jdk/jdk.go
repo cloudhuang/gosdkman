@@ -236,7 +236,7 @@ func ListAvailableJDKVersion() {
 
 	fmt.Println("=====================================================================================")
 	fmt.Println("Use the Identifier for installation:")
-	fmt.Println("\t jdk -i 11.0.6.10.1-amaz")
+	fmt.Println("\t sdk -i 11.0.6.10.1-amaz")
 }
 
 func selectAvailableJDK(identifier string) *NewInstallVersion {
