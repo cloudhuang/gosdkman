@@ -154,8 +154,7 @@ func UninstallVersion(identifier string) error {
 	check(err)
 
 	if jdk.Current == identifier {
-		fmt.Printf("The JDK version %s currently in use, cannot uninstall", identifier)
-		return errors.New("can't uninstall the version")
+		return errors.New(fmt.Sprintf("The JDK version '%s' currently in use, cannot uninstall", identifier))
 	}
 
 	var file string
@@ -168,15 +167,19 @@ func UninstallVersion(identifier string) error {
 		}
 	}
 
-	if file != "" {
-		// TODO delete the jdk file
-		fmt.Printf("the jdk file: %s\n", file)
+	if file != "" && utils.Exists(filepath.Join(SdkManPath, file)) {
+		err := os.RemoveAll(filepath.Join(SdkManPath, file))
+		if err != nil {
+			return errors.New("failed to delete the JDK version")
+		}
 	}
 
 	marshal, _ := yaml.Marshal(jdk)
 
 	err = ioutil.WriteFile(SdkManYaml, marshal, 0755)
-	check(err)
+	if err != nil {
+		return errors.New("failed to delete the JDK version")
+	}
 
 	return nil
 }

@@ -41,7 +41,12 @@ func main() {
 
 	gocmd.HandleFlag("Uninstall", func(cmd *gocmd.Cmd, args []string) error {
 		identifier := args[0]
-		fmt.Println(identifier)
+		err := jdk.UninstallVersion(identifier)
+		if err == nil {
+			fmt.Println("The JDK version deleted.")
+		} else {
+			fmt.Println(err.Error())
+		}
 		return nil
 	})
 

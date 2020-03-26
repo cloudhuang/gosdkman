@@ -28,7 +28,7 @@ func TestUnZip(t *testing.T) {
 
 
 func TestUninstallVersion(t *testing.T) {
-	err := UninstallVersion("11.0.6.10.1-amaz")
+	err := UninstallVersion("14.27.1-zulu")
 	if err != nil {
 		fmt.Println(err)
 	}
