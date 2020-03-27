@@ -70,10 +70,12 @@ func UseJDKVersion(identifier string) error {
 			return errors.New("\nFailed to config the JDK path")
 		}
 
-		newJDKPath := unzipJDKVersion(localJDKFile)
-
+		err = unzipJDKVersion(localJDKFile)
+		if err != nil {
+			return errors.New("\nFailed to config the JDK path")
+		}
 		// set the system environments
-		err = utils.SetEnv("JAVA_HOME", filepath.Join(currentJdkPath, newJDKPath))
+		err = utils.SetEnv("JAVA_HOME", currentJdkPath)
 		if err != nil {
 			return errors.New("\nFailed to config the JDK path")
 		}
@@ -135,7 +137,7 @@ func configSDKManYaml(nv *NewInstallVersion, localJDKFile string, identifier str
 	return nil
 }
 
-func unzipJDKVersion(filename string) string {
+func unzipJDKVersion(filename string) error {
 	// unzip the jdk zip file to Current folder
 	utils.Unzip(filepath.Join(SdkManPath, filename), currentJdkPath)
 
@@ -151,7 +153,16 @@ func unzipJDKVersion(filename string) string {
 		newJDKPath = file.Name()
 	}
 
-	return newJDKPath
+	err = utils.CopyDir(filepath.Join(currentJdkPath, newJDKPath), currentJdkPath)
+	if err != nil {
+		return err
+	}
+	err = os.RemoveAll(filepath.Join(currentJdkPath, newJDKPath))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func clearOrCreateCurrentPath() error {

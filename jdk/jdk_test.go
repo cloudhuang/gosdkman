@@ -3,6 +3,10 @@ package jdk
 import (
 	"fmt"
 	"gosdkman/utils"
+	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -44,4 +48,24 @@ func TestDownloadRemoteJDKFile(t *testing.T) {
 
 func TestLength(t *testing.T) {
 	fmt.Println(len("AdoptOpenJDK"))
+}
+
+func TestCopyFolder(t *testing.T) {
+	fmt.Println(currentJdkPath)
+	// list the folder
+	files, err := ioutil.ReadDir(currentJdkPath)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var newJDKPath string
+	for _, file := range files {
+		newJDKPath = file.Name()
+	}
+
+	fmt.Println(newJDKPath)
+
+	err = utils.CopyDir(filepath.Join(currentJdkPath, newJDKPath), currentJdkPath)
+	os.RemoveAll(filepath.Join(currentJdkPath, newJDKPath))
 }
