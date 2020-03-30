@@ -2,6 +2,7 @@ package jdk
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v2"
 	"gosdkman/utils"
 	"io/ioutil"
 	"log"
@@ -68,4 +69,19 @@ func TestCopyFolder(t *testing.T) {
 
 	err = utils.CopyDir(filepath.Join(currentJdkPath, newJDKPath), currentJdkPath)
 	os.RemoveAll(filepath.Join(currentJdkPath, newJDKPath))
+}
+
+func TestParseYamlFile(t *testing.T) {
+	var sdk SDK
+	yamlFile, err := ioutil.ReadFile("../sdkman.yaml")
+	if err != nil {
+		panic(yamlFile)
+	}
+
+	err = yaml.Unmarshal(yamlFile, &sdk)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(sdk.Jdk.Current)
 }

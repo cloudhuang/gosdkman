@@ -1,78 +1,79 @@
-current:
-versions:
-  "Amazon":
-    1.8:
-      dist: "amaz"
-      identifier: "1.8-amaz"
-      file: https://corretto.aws/downloads/latest/amazon-corretto-8-x64-windows-jdk.zip
-    11:
-      dist: "amaz"
-      identifier: "11-amaz"
-      file: https://corretto.aws/downloads/latest/amazon-corretto-11-x64-windows-jdk.zip
-  "AdoptOpenJDK":
-    "8u242+b08":
-      dist: "adpt"
-      identifier: "8u242+b08-adpt"
-      file: https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u242-b08/OpenJDK8U-jdk_x86-32_windows_hotspot_8u242b08.zip
-    "9.0.4+11":
-      dist: "adpt"
-      identifier: "9.0.4+11-adpt"
-      file: https://github.com/AdoptOpenJDK/openjdk9-binaries/releases/download/jdk-9.0.4%2B11/OpenJDK9U-jdk_x64_windows_hotspot_9.0.4_11.zip
-    "10.0.2+13.1":
-      dist: "adpt"
-      identifier: "10.0.2+13.1-adpt"
-      file: https://github.com/AdoptOpenJDK/openjdk10-binaries/releases/download/jdk-10.0.2%2B13.1/OpenJDK10U-jdk_x64_windows_hotspot_10.0.2_13.zip
-    "11.0.6+10":
-      dist: "adpt"
-      identifier: "11.0.6+10-adpt"
-      file: https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.6%2B10/OpenJDK11U-jdk_x86-32_windows_hotspot_11.0.6_10.zip
-    "12.0.2+10":
-      dist: "adpt"
-      identifier: "12.0.2+10-adpt"
-      file: https://github.com/AdoptOpenJDK/openjdk12-binaries/releases/download/jdk-12.0.2%2B10/OpenJDK12U-jdk_x86-32_windows_hotspot_12.0.2_10.zip
-    "13.0.2+8":
-      dist: "adpt"
-      identifier: "13.0.2+8-adpt"
-      file: https://github.com/AdoptOpenJDK/openjdk13-binaries/releases/download/jdk-13.0.2%2B8/OpenJDK13U-jdk_x86-32_windows_hotspot_13.0.2_8.zip
-    "14+36":
-      dist: "adpt"
-      identifier: "14+36-adpt"
-      file: https://github.com/AdoptOpenJDK/openjdk14-binaries/releases/download/jdk-14%2B36/OpenJDK14U-jdk_x86-32_windows_hotspot_14_36.zip
-  "Java.net":
-    "1.7.0_75-b13":
-      dist: "open"
-      identifier: "1.7.0_75-b13-open"
-      file: https://download.java.net/openjdk/jdk7u75/ri/jdk_ri-7u75-b13-windows-i586-18_dec_2014.zip
-    "1.8.0_41-b04":
-      dist: "open"
-      identifier: "1.8.0_41-b04-open"
-      file: https://download.java.net/openjdk/jdk8u41/ri/openjdk-8u41-b04-windows-i586-14_jan_2020.zip
-    "1.9_181":
-      dist: "open"
-      identifier: "1.9_181-open"
-      file: https://download.java.net/openjdk/jdk9/ri/jdk-9+181_windows-x64_ri.zip
-    "11_28":
-      dist: "open"
-      identifier: "11_28-open"
-      file: https://download.java.net/openjdk/jdk11/ri/openjdk-11+28_windows-x64_bin.zip
-    "12_32":
-      dist: "open"
-      identifier: "12_32-open"
-      file: https://download.java.net/openjdk/jdk12/ri/openjdk-12+32_windows-x64_bin.zip
-    "13_33":
-      dist: "open"
-      identifier: "13_33-open"
-      file: https://download.java.net/openjdk/jdk13/ri/openjdk-13+33_windows-x64_bin.zip
-    "14_36":
-      dist: "open"
-      identifier: "14_36-open"
-      file: https://download.java.net/openjdk/jdk14/ri/openjdk-14+36_windows-x64_bin.zip
-  "Azul Zulu":
-    14.27.1:
-      dist: "zulu"
-      identifier: "14.27.1-zulu"
-      file: https://cdn.azul.com/zulu/bin/zulu14.27.1-ca-jdk14-win_x64.zip
-    13.29.9:
-      dist: "zulu"
-      identifier: "13.29.9-zulu"
-      file: https://cdn.azul.com/zulu/bin/zulu13.29.9-ca-jdk13.0.2-win_x64.zip
+jdk:
+  current: "8u242+b08-adpt"
+  versions:
+    "Amazon":
+      1.8:
+        dist: "amaz"
+        identifier: "1.8-amaz"
+        file: https://corretto.aws/downloads/latest/amazon-corretto-8-x64-windows-jdk.zip
+      11:
+        dist: "amaz"
+        identifier: "11-amaz"
+        file: https://corretto.aws/downloads/latest/amazon-corretto-11-x64-windows-jdk.zip
+    "AdoptOpenJDK":
+      "8u242+b08":
+        dist: "adpt"
+        identifier: "8u242+b08-adpt"
+        file: https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u242-b08/OpenJDK8U-jdk_x86-32_windows_hotspot_8u242b08.zip
+      "9.0.4+11":
+        dist: "adpt"
+        identifier: "9.0.4+11-adpt"
+        file: https://github.com/AdoptOpenJDK/openjdk9-binaries/releases/download/jdk-9.0.4%2B11/OpenJDK9U-jdk_x64_windows_hotspot_9.0.4_11.zip
+      "10.0.2+13.1":
+        dist: "adpt"
+        identifier: "10.0.2+13.1-adpt"
+        file: https://github.com/AdoptOpenJDK/openjdk10-binaries/releases/download/jdk-10.0.2%2B13.1/OpenJDK10U-jdk_x64_windows_hotspot_10.0.2_13.zip
+      "11.0.6+10":
+        dist: "adpt"
+        identifier: "11.0.6+10-adpt"
+        file: https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.6%2B10/OpenJDK11U-jdk_x86-32_windows_hotspot_11.0.6_10.zip
+      "12.0.2+10":
+        dist: "adpt"
+        identifier: "12.0.2+10-adpt"
+        file: https://github.com/AdoptOpenJDK/openjdk12-binaries/releases/download/jdk-12.0.2%2B10/OpenJDK12U-jdk_x86-32_windows_hotspot_12.0.2_10.zip
+      "13.0.2+8":
+        dist: "adpt"
+        identifier: "13.0.2+8-adpt"
+        file: https://github.com/AdoptOpenJDK/openjdk13-binaries/releases/download/jdk-13.0.2%2B8/OpenJDK13U-jdk_x86-32_windows_hotspot_13.0.2_8.zip
+      "14+36":
+        dist: "adpt"
+        identifier: "14+36-adpt"
+        file: https://github.com/AdoptOpenJDK/openjdk14-binaries/releases/download/jdk-14%2B36/OpenJDK14U-jdk_x86-32_windows_hotspot_14_36.zip
+    "Java.net":
+      "1.7.0_75-b13":
+        dist: "open"
+        identifier: "1.7.0_75-b13-open"
+        file: https://download.java.net/openjdk/jdk7u75/ri/jdk_ri-7u75-b13-windows-i586-18_dec_2014.zip
+      "1.8.0_41-b04":
+        dist: "open"
+        identifier: "1.8.0_41-b04-open"
+        file: https://download.java.net/openjdk/jdk8u41/ri/openjdk-8u41-b04-windows-i586-14_jan_2020.zip
+      "1.9_181":
+        dist: "open"
+        identifier: "1.9_181-open"
+        file: https://download.java.net/openjdk/jdk9/ri/jdk-9+181_windows-x64_ri.zip
+      "11_28":
+        dist: "open"
+        identifier: "11_28-open"
+        file: https://download.java.net/openjdk/jdk11/ri/openjdk-11+28_windows-x64_bin.zip
+      "12_32":
+        dist: "open"
+        identifier: "12_32-open"
+        file: https://download.java.net/openjdk/jdk12/ri/openjdk-12+32_windows-x64_bin.zip
+      "13_33":
+        dist: "open"
+        identifier: "13_33-open"
+        file: https://download.java.net/openjdk/jdk13/ri/openjdk-13+33_windows-x64_bin.zip
+      "14_36":
+        dist: "open"
+        identifier: "14_36-open"
+        file: https://download.java.net/openjdk/jdk14/ri/openjdk-14+36_windows-x64_bin.zip
+    "Azul Zulu":
+      14.27.1:
+        dist: "zulu"
+        identifier: "14.27.1-zulu"
+        file: https://cdn.azul.com/zulu/bin/zulu14.27.1-ca-jdk14-win_x64.zip
+      13.29.9:
+        dist: "zulu"
+        identifier: "13.29.9-zulu"
+        file: https://cdn.azul.com/zulu/bin/zulu13.29.9-ca-jdk13.0.2-win_x64.zip

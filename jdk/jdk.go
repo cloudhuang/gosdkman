@@ -17,11 +17,11 @@ var SdkManPath = filepath.Join(Home, ".gosdkman")
 var SdkManYaml = filepath.Join(SdkManPath, "sdkman.yaml")
 var currentJdkPath = filepath.Join(SdkManPath, "current")
 
-type RemoteJDK struct {
-	Versions map[string]map[string]Version `yaml:"versions"`
+type SDK struct {
+	Jdk JDK `yaml:"jdk"`
 }
 
-type LocalJDK struct {
+type JDK struct {
 	Current  string                        `yaml:"current"`
 	Versions map[string]map[string]Version `yaml:"versions"`
 }
@@ -105,30 +105,30 @@ func configSDKManYaml(nv *NewInstallVersion, localJDKFile string, identifier str
 		File:       localJDKFile,
 	}
 
-	var jdk LocalJDK
+	var sdk SDK
 	yamlFile, err := ioutil.ReadFile(SdkManYaml)
 	if err != nil {
-		jdk = LocalJDK{
-			Current: nv.identifier,
-		}
+		sdk = SDK{Jdk:JDK{Current:nv.identifier}}
 	} else {
-		err = yaml.Unmarshal(yamlFile, &jdk)
+		err = yaml.Unmarshal(yamlFile, &sdk)
 		if err != nil {
 			return errors.New("\nFailed to config the JDK path")
 		}
 	}
 
-	if jdk.Versions == nil {
-		jdk.Versions = make(map[string]map[string]Version)
+
+
+	if sdk.Jdk.Versions == nil {
+		sdk.Jdk.Versions = make(map[string]map[string]Version)
 	}
 
-	if jdk.Versions[nv.vendor] == nil {
-		jdk.Versions[nv.vendor] = make(map[string]Version)
+	if sdk.Jdk.Versions[nv.vendor] == nil {
+		sdk.Jdk.Versions[nv.vendor] = make(map[string]Version)
 	}
-	jdk.Versions[nv.vendor][nv.version] = *newVersion
-	jdk.Current = identifier
+	sdk.Jdk.Versions[nv.vendor][nv.version] = *newVersion
+	sdk.Jdk.Current = identifier
 
-	marshal, _ := yaml.Marshal(jdk)
+	marshal, _ := yaml.Marshal(sdk)
 
 	err = ioutil.WriteFile(SdkManYaml, marshal, 0755)
 	if err != nil {
@@ -186,7 +186,7 @@ func UninstallVersion(identifier string) error {
 		return err
 	}
 
-	var jdk LocalJDK
+	var jdk JDK
 
 	err = yaml.Unmarshal(yamlFile, &jdk)
 	check(err)
@@ -272,7 +272,7 @@ func selectAvailableJDK(identifier string) *NewInstallVersion {
 	return &nv
 }
 
-func remoteJDK() *RemoteJDK {
+func remoteJDK() *JDK {
 	var remoteSDKManYaml = "http://q7oqvkeuv.bkt.clouddn.com/sdkman.yaml"
 
 	resp, err := http.Get(remoteSDKManYaml)
@@ -283,31 +283,31 @@ func remoteJDK() *RemoteJDK {
 	defer resp.Body.Close()
 	content, err := ioutil.ReadAll(resp.Body)
 
-	var jdk RemoteJDK
-	err = yaml.Unmarshal(content, &jdk)
+	var sdk SDK
+	err = yaml.Unmarshal(content, &sdk)
 	check(err)
 
-	return &jdk
+	return &sdk.Jdk
 }
 
 /*
 Get all local JDK version
 */
-func localJDK() *LocalJDK {
+func localJDK() *JDK {
 	yamlFile, err := ioutil.ReadFile(SdkManYaml)
 	if err != nil {
-		return &LocalJDK{}
+		return &JDK{}
 	}
 
-	var jdk LocalJDK
+	var sdk SDK
 
-	err = yaml.Unmarshal(yamlFile, &jdk)
+	err = yaml.Unmarshal(yamlFile, &sdk)
 	check(err)
 
-	return &jdk
+	return &sdk.Jdk
 }
 
-func isStatusInstalled(identifier string, jdk *LocalJDK) string {
+func isStatusInstalled(identifier string, jdk *JDK) string {
 	for _, versions := range jdk.Versions {
 		for _, v := range versions {
 			if identifier == v.Identifier && isJDKFileExists(v.File) {
@@ -337,7 +337,7 @@ func isJDKFileExists(file string) bool {
 }
 
 /*
-List all the installed local LocalJDK versions
+List all the installed local JDK versions
 */
 func ListInstalledVersion() {
 	yamlFile, err := ioutil.ReadFile(SdkManYaml)
@@ -345,7 +345,7 @@ func ListInstalledVersion() {
 		return
 	}
 
-	var jdk LocalJDK
+	var jdk JDK
 
 	err = yaml.Unmarshal(yamlFile, &jdk)
 	check(err)
