@@ -3,13 +3,14 @@ package jdk
 import (
 	"errors"
 	"fmt"
-	"gopkg.in/yaml.v2"
 	"gosdkman/utils"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"gopkg.in/yaml.v2"
 )
 
 var Home, _ = os.UserHomeDir()
@@ -108,15 +109,13 @@ func configSDKManYaml(nv *NewInstallVersion, localJDKFile string, identifier str
 	var sdk SDK
 	yamlFile, err := ioutil.ReadFile(SdkManYaml)
 	if err != nil {
-		sdk = SDK{Jdk:JDK{Current:nv.identifier}}
+		sdk = SDK{Jdk: JDK{Current: nv.identifier}}
 	} else {
 		err = yaml.Unmarshal(yamlFile, &sdk)
 		if err != nil {
 			return errors.New("\nFailed to config the JDK path")
 		}
 	}
-
-
 
 	if sdk.Jdk.Versions == nil {
 		sdk.Jdk.Versions = make(map[string]map[string]Version)
@@ -273,7 +272,7 @@ func selectAvailableJDK(identifier string) *NewInstallVersion {
 }
 
 func remoteJDK() *JDK {
-	var remoteSDKManYaml = "http://q7oqvkeuv.bkt.clouddn.com/sdkman.yaml"
+	var remoteSDKManYaml = "https://gitee.com/huntter/gosdkman/raw/master/sdkman.yaml"
 
 	resp, err := http.Get(remoteSDKManYaml)
 	if err != nil {
