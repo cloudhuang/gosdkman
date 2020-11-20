@@ -13,6 +13,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+const remoteSDKManYaml = "https://gitee.com/huntter/gosdkman/raw/master/sdkman.yaml"
+
 var Home, _ = os.UserHomeDir()
 var SdkManPath = filepath.Join(Home, ".gosdkman")
 var SdkManYaml = filepath.Join(SdkManPath, "sdkman.yaml")
@@ -272,8 +274,6 @@ func selectAvailableJDK(identifier string) *NewInstallVersion {
 }
 
 func remoteJDK() *JDK {
-	var remoteSDKManYaml = "https://gitee.com/huntter/gosdkman/raw/master/sdkman.yaml"
-
 	resp, err := http.Get(remoteSDKManYaml)
 	if err != nil {
 		panic(err)
