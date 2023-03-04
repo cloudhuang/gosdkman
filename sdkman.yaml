@@ -77,3 +77,8 @@ jdk:
         dist: "zulu"
         identifier: "13.29.9-zulu"
         file: https://cdn.azul.com/zulu/bin/zulu13.29.9-ca-jdk13.0.2-win_x64.zip
+      17:
+        dist: "zulu"
+        identifier: "17-zulu"
+        file: https://cdn.azul.com/zulu/bin/zulu17.40.19-ca-jdk17.0.6-win_x64.zip
+        
